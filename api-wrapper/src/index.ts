@@ -20,3 +20,5 @@ export default class PornolabAPI {
   getForum = GetForum
   getTopic = GetTopic
 }
+
+export { downloadUtility } from './utils.js'

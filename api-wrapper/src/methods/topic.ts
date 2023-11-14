@@ -1,9 +1,73 @@
 import PornolabAPI from '@/index.js'
-import { TopicMin } from '@/model/topic.js'
-import { sizeToBytes } from '@/utils.js'
+import { Topic, TopicMin } from '@/model/topic.js'
+import { downloadUtility, parseDate, request, sizeToBytes } from '@/utils.js'
+import { JSDOM } from 'jsdom'
 
 export async function GetTopic(this: PornolabAPI, topicId: number): Promise<Topic> {
-  this.bbData
+  const response = await request('/forum/viewtopic.php?' + new URLSearchParams({
+    t: String(topicId),
+  }), { bbData: this.bbData })
+
+  const dom = new JSDOM(response)
+  const page = dom.window.document
+
+  const downloadLink = page.querySelector('.dl-link')?.getAttribute('href')
+  const isFileTopic = downloadLink !== null
+
+  const title = page.querySelector('h1.maintitle')?.textContent?.trim()
+  const createdAt = parseDate(page.querySelector('#topic_main > tbody:nth-child(2) .post_head a.small')?.textContent?.trim())
+  const authorName = page.querySelector('#topic_main > tbody:nth-child(2) .nick-author')?.textContent?.trim()
+  const authorId = page.querySelector('#topic_main > tbody:nth-child(2) .poster_btn > .post_btn_2 > a:first-child')?.getAttribute('href')?.match(/profile.php\?mode=viewprofile&u=(\d+)/)?.[1]
+  const author = {
+    id: Number(authorId),
+    name: authorName!
+  }
+  const htmlContent = page.querySelector('.post-user-message')?.innerHTML.trim()
+
+  let topic
+  
+  if(isFileTopic) {
+    const [,,downloadsCell,sizeCell] = page.querySelectorAll('#tor-reged > table:first-child .row1')
+    const size = sizeCell.children[1].textContent?.trim()
+    const downloads = downloadsCell.children[1].childNodes[0].textContent?.trim()
+    const seed = page.querySelector('.seed')
+    const seeders = seed?.querySelector(':scope > b')?.textContent?.trim()
+    const downloadSpeed = seed?.childNodes[2]?.textContent?.trim()?.match(/^\[ +(.+?) +\]$/)?.[1]
+    const leechers = page.querySelector('.leech > b')?.textContent?.trim()
+
+    const torrentSize = page.querySelector('p .dl-link')?.parentNode?.nextSibling?.textContent?.trim()
+
+    topic = {
+      type: 'file',
+      id: topicId,
+      title: title!,
+      createdAt,
+      author,
+      htmlContent: htmlContent!,
+      size: sizeToBytes(size),
+      downloads: Number(downloads),
+      torrent: {
+        size: sizeToBytes(torrentSize),
+        download: () => downloadUtility(topicId)
+      },
+      downloadStatistics: {
+        seeders: Number(seeders),
+        speed: downloadSpeed ?? '0 KB/s',
+        leechers: Number(leechers)
+      }
+    } satisfies Topic
+  } else {
+    topic = {
+      type: 'info',
+      id: topicId,
+      title: title!,
+      createdAt,
+      author,
+      htmlContent: htmlContent!
+    } satisfies Topic
+  }
+
+  return topic
 }
 
 export function getTopicMin(topicRow: Element): TopicMin {

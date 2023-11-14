@@ -1,3 +1,4 @@
+import { TorrentFile } from '@/model/torrent-file.js'
 import * as windows1251 from 'windows-1251'
 
 export async function request(path: string, auth: { bbData: string }, options?: { method?: string, body?: any, headers: Record<string, string> }) {
@@ -26,4 +27,20 @@ export function sizeToBytes(size?: string) {
     'TB': 1024 * 1024 * 1024 * 1024,
   }
   return Number(value) * units[unit]
+}
+
+export function parseDate(dateString?: string) {
+  if (!dateString) return new Date('Invalid Date')
+  const match = dateString.match(/(\d{2})-([а-яА-Я]{3})-(\d{2}) (\d{2}):(\d{2}):(\d{2})/)
+  if(!match) return new Date('Invalid Date')
+  const [, day, shortMonth, shortYear, hours, minutes, seconds] = match
+  const month = [
+    'Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн',
+    'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'
+  ].indexOf(shortMonth)
+  return new Date(Number('20' + shortYear), month, Number(day), Number(hours), Number(minutes), Number(seconds))
+}
+
+export async function downloadUtility(topicId: number): Promise<TorrentFile> {
+    
 }
