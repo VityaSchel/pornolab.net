@@ -1,6 +1,6 @@
 # pornolab.net API JavaScript wrapper
 
-Неофициальный враппер браузерного API для pornolab.net с TypeScript и покрытием тестов Jest.
+Неофициальный враппер браузерного API для pornolab.net с TypeScript и покрытием тестов Jest. Парсинг HTML с jsdom.
 
 Полная документация по реверс-инженерингу форума доступна на [GitHub](https://github.com/VityaSchel/pornolab.net)
 
@@ -25,7 +25,7 @@ import PornolabAPI from 'gayporn'
 
 const pornolab = new PornolabAPI({ bbData: `1-00000000-aAaAaAaAaAaAaAaAaAaA-0000000000-0000000000-0000000000-0000000000-1` })
 
-pornolab.getForum(1688, { page: 1 })
+pornolab.getForum(1688, { offset: 50 })
   .then(({ subforums, announcements, sticky, topics }) => {
     console.log('Форумы:', subforums.map(forum => forum.name).join(', '))
     console.log('Объявления:', announcements.map(topic => topic.title).join(', '))
