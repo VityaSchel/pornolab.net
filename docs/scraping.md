@@ -2,7 +2,7 @@
 
 Перед прочтением этой статьи ознакомьтесь с тем, как авторизовывать запросы к форуму: [docs/auth.md](./auth.md)
 
-Для запросао главной страницы форума сделайте GET запрос к `https://pornolab.net/forum/index.php` с заголовком Cookie.
+Для запроса главной страницы форума сделайте GET запрос к `https://pornolab.net/forum/index.php` с заголовком Cookie.
 Для запроса других страниц, например конкретной категории, используйте аналогичный GET запрос к `https://pornolab.net/forum/viewforum.php?f=1688` или подкатегории `https://pornolab.net/forum/viewforum.php?f=1777`
 Для запроса темы (топика) аналогично сделайте GET запрос, например к `https://pornolab.net/forum/viewtopic.php?t=1641717`
 
