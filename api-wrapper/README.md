@@ -55,7 +55,7 @@ pornolab.getTopic(1641717)
     topic.torrent.download()
       .then(torrentFile => {
         console.log('Название торрент-файла:', torrentFile.name)
-        // Use torrentFile.content as Buffer to get raw content
+        // Use torrentFile.content as ArrayBuffer to get raw content
       })
   })
 ```
@@ -171,7 +171,7 @@ export type UserMin = User
 ```ts
 export type TorrentFile = {
   name: string
-  content: Buffer
+  content: ArrayBuffer
 }
 ```
 

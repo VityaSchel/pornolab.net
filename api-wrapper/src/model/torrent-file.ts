@@ -1,4 +1,4 @@
 export type TorrentFile = {
   name: string
-  content: Buffer
+  content: ArrayBuffer
 }

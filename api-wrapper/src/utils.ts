@@ -11,8 +11,7 @@ export async function request(path: string, auth: { bbData: string }, options?: 
     }
   })
     .then(res => res.arrayBuffer())
-  const content = Buffer.from(response)
-  const text = windows1251.decode(content)
+  const text = windows1251.decode(new Uint8Array(response))
   return text
 }
 
@@ -59,7 +58,7 @@ export async function downloadUtility(auth: { bbData: string }, topicId: number)
       Cookie: `bb_data=${auth.bbData}; testCookie=1; cookie_notice=1`,
     }
   })
-  const content = Buffer.from(await response.arrayBuffer())
+  const content = await response.arrayBuffer()
   return {
     name: response.headers.get('Content-Disposition')?.match(/filename="(.+)"/)?.[1] ?? 'unknown.torrent',
     content
