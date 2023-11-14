@@ -41,6 +41,15 @@ export function parseDate(dateString?: string) {
   return new Date(Number('20' + shortYear), month, Number(day), Number(hours), Number(minutes), Number(seconds))
 }
 
-export async function downloadUtility(topicId: number): Promise<TorrentFile> {
-    
+export async function downloadUtility(auth: { bbData: string }, topicId: number): Promise<TorrentFile> {
+  const response = await fetch(`https://pornolab.net/forum/dl.php?t=${topicId}`, {
+    headers: {
+      Cookie: `bb_data=${auth.bbData}; testCookie=1; cookie_notice=1`,
+    }
+  })
+  const content = Buffer.from(await response.arrayBuffer())
+  return {
+    name: response.headers.get('Content-Disposition')?.match(/filename="(.+)"/)?.[1] ?? 'unknown.torrent',
+    content
+  }
 }

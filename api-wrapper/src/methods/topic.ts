@@ -48,7 +48,7 @@ export async function GetTopic(this: PornolabAPI, topicId: number): Promise<Topi
       downloads: Number(downloads),
       torrent: {
         size: sizeToBytes(torrentSize),
-        download: () => downloadUtility(topicId)
+        download: () => downloadUtility({ bbData: this.bbData }, topicId)
       },
       downloadStatistics: {
         seeders: Number(seeders),
