@@ -1,42 +1,120 @@
 import PornolabAPI from '@/index.js'
 import { request } from '@/utils.js'
-import { Forum } from '@/model/forum.js'
+import { Forum, ForumMin } from '@/model/forum.js'
 import { JSDOM } from 'jsdom'
-import { addTo, SelectorHandler } from 'polyfill-pseudoclass-has'
+import { getTopicMin } from '@/methods/topic.js'
 
 export async function GetForum(this: PornolabAPI, forumId: number, options?: { offset?: number }): Promise<Forum> {
   const response = await request('/forum/viewforum.php?' + new URLSearchParams({
     f: String(forumId),
     ...(options?.offset && { start: String(options.offset) })
   }), { bbData: this.bbData })
-    .then(res => res.text())
-  console.log(response.length)  
 
   const dom = new JSDOM(response)
-  addTo(dom.window.Element, dom.window.Document, dom.window.DocumentFragment)
   const page = dom.window.document
 
-  const name = page.querySelector('h1.maintitle')
+  const name = page.querySelector('h1.maintitle')?.textContent?.trim()
+  const tables = Array.from(page.querySelectorAll('table.forumline.forum'))
+  const subforumsTable = tables.find(table => table.querySelector('tbody > tr > th')?.textContent?.trim() === 'Форум')
+  const mainTable = tables.find(table => table.querySelector('tbody > tr > th')?.textContent?.trim() === 'Темы')
 
-  const [
-    subforums
-  ] = await Promise.all([
-    getSubforums(page)
-  ])
+  const subforums = subforumsTable ? getSubforums(subforumsTable) : []
+  const { announcements: announcementsRows, sticky: stickyRows, topics: topicsRows } = parseMainTable(mainTable!)
+  const announcements = getAnnouncements(announcementsRows)
+  const sticky = getSticky(stickyRows)
+  const topics = getTopics(topicsRows)
 
   const forum = {
     id: forumId,
-    name: name,
+    name: name!,
     subforums: subforums,
-    // announcements: announcements,
-    // sticky: sticky,
-    // topics: topics,
+    announcements: announcements,
+    sticky: sticky,
+    topics: topics,
   }
 
   return forum
 }
 
-export async function getSubforums(document: Document) {
-  const table = document.querySelectorAll('table.forumline.forum')
-  return table
+export function getSubforums(subforumsTable: Element): ForumMin[] {
+  const rows = Array.from(subforumsTable.querySelectorAll('tr:not(:first-child)'))
+  const subforums = rows.map(row => {
+    const name = row.querySelector('h4')?.textContent?.trim()
+    const id = row.querySelector('h4 > a')?.getAttribute('href')?.match(/^viewforum.php\?f=(\d+)/)?.[1]
+    const topics = row.children[2].textContent?.trim()
+    const messages = row.children[3].textContent?.trim()
+    const lastMessageAuthor = row.children[4].querySelector(':scope > p > a')
+    const lastMessage = {
+      topicId: row.children[4].querySelector(':scope > h6 > a')?.getAttribute('href')?.match(/^viewtopic.php\?t=(\d+)/)?.[1],
+      date: row.children[4].querySelector(':scope > p')?.childNodes[0].textContent?.trim(),
+      author: {
+        id: lastMessageAuthor?.getAttribute('href')?.match(/profile.php\?mode=viewprofile&u=(\d+)/)?.[1],
+        name: lastMessageAuthor?.textContent?.trim(),
+      }
+    }
+    
+    return {
+      name: name!,
+      id: Number(id),
+      topics: Number(topics),
+      messages: Number(messages),
+      lastMessage: {
+        topicId: Number(lastMessage.topicId),
+        date: new Date(lastMessage.date!),
+        author: {
+          id: Number(lastMessage.author.id),
+          name: lastMessage.author.name!,
+        }
+      }
+    } satisfies ForumMin
+  })
+  return subforums
+}
+
+function getAnnouncements(announcementsRows: Element[]) {
+  return announcementsRows.map(getTopicMin)
+}
+
+function getSticky(stickyRows: Element[]) {
+  return stickyRows.map(getTopicMin)
+}
+
+function getTopics(topicsRows: Element[]) {
+  return topicsRows.map(getTopicMin)
+}
+
+function parseMainTable(table: Element) {
+  const rows = Array.from(table.querySelectorAll(':scope > tbody > tr'))
+  rows.shift()
+  const announcements: Element[] = []
+  const sticky: Element[] = []
+  const topics: Element[] = []
+
+  let currentRows: Element[] = []
+  let currentSection: 'announcements' | 'sticky' | 'topics' | null = null
+  for (const row of rows) {
+    const separator = row.querySelector(':scope > td.topicSep')
+    if (separator) {
+      if (currentSection === 'announcements') {
+        announcements.push(...currentRows)
+      } else if (currentSection === 'sticky') {
+        sticky.push(...currentRows)
+      } else if (currentSection === 'topics') {
+        topics.push(...currentRows)
+      }
+      
+      currentRows = []
+      if(separator.textContent?.trim() === 'Объявления') {
+        currentSection = 'announcements'
+      } else if (separator.textContent?.trim() === 'Прилеплено') {
+        currentSection = 'sticky'
+      } else if (separator.textContent?.trim() === 'Топики') {
+        currentSection = 'topics'
+      }
+    } else {
+      currentRows.push(row)
+    }
+  }
+
+  return { announcements, sticky, topics }
 }

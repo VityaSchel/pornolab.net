@@ -1,13 +1,13 @@
-import { Topic } from '@/model/topic'
+import { TopicMin } from '@/model/topic'
 import { UserMin } from '@/model/user.js'
 
 export type Forum = {
   id: number
   name: string
   subforums: ForumMin[]
-  announcements: Topic[]
-  sticky: Topic[]
-  topics: Topic[]
+  announcements: TopicMin[]
+  sticky: TopicMin[]
+  topics: TopicMin[]
 }
 
 export type ForumMin = Pick<Forum, 'id' | 'name'> & {

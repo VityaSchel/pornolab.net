@@ -2,6 +2,7 @@ import { TorrentFile } from '@/model/torrent-file'
 import { UserMin } from '@/model/user'
 
 export type FileTopic = {
+  id: number
   type: 'file'
   title: string
   createdAt: Date
@@ -21,6 +22,7 @@ export type FileTopic = {
 }
 
 export type InfoTopic = {
+  id: number
   type: 'info'
   title: string
   createdAt: Date
@@ -29,3 +31,22 @@ export type InfoTopic = {
 }
 
 export type Topic = FileTopic | InfoTopic
+
+export type TopicMin = Pick<Topic, 'id' | 'title' | 'author'> & {
+  replies: number
+  updatedAt: Date
+} & (FileTopicMin | InfoTopicMin)
+
+type FileTopicMin = {
+  type: 'file'
+  downloadStatistics: {
+    seeders: number
+    leechers: number
+  }
+  size: number
+  downloads: number
+}
+
+type InfoTopicMin = {
+  type: 'info'
+}

@@ -36,6 +36,6 @@
   },
   "dependencies": {
     "jsdom": "^22.1.0",
-    "polyfill-pseudoclass-has": "^0.0.4"
+    "windows-1251": "^3.0.4"
   }
 }
