@@ -1,4 +1,4 @@
-# pornolab.net API JavaScript wrapper
+# pornolab.net API
 
 Монорепа в которой есть технические заметки по работе форума pornolab.net и враппер его браузерного апи.
 
@@ -20,6 +20,10 @@
 - [2. Запросы страниц и скрейпинг](./docs/scraping.md)
 - [3. Страница топика, ссылка на скачивание](./docs/topic.md)
 - [Поиск](./docs/search.md)
+
+## Враппер
+
+См. документацию в [./api-wrapper/README.md](./api-wrapper/README.md)
 
 ## Лицензия
 
