@@ -52,9 +52,11 @@ pornolab.getTopic(1641717)
     console.log('Личи:', topic.downloadStatistics.leechers)
     console.log('Автор:', topic.author.id, topic.author.name)
 
-    const torrentFile = await topic.torrent.download()
-    console.log('Название торрент-файла:', torrentFile.name)
-    // Use torrentFile.content as Buffer to get raw content
+    topic.torrent.download()
+      .then(torrentFile => {
+        console.log('Название торрент-файла:', torrentFile.name)
+        // Use torrentFile.content as Buffer to get raw content
+      })
   })
 ```
 
@@ -70,7 +72,108 @@ pornolab.getTopic(1641717)
 
 ### Forum
 
+```ts
+export type Forum = {
+  id: number
+  name: string
+  subforums: ForumMin[]
+  announcements: TopicMin[]
+  sticky: TopicMin[]
+  topics: TopicMin[]
+}
 
+export type ForumMin = Pick<Forum, 'id' | 'name'> & {
+  topics: number
+  messages: number
+  lastMessage: {
+    topicId: number
+    date: Date
+    author: UserMin
+  }
+}
+```
+
+### Topic
+
+```ts
+
+export type FileTopic = {
+  id: number
+  type: 'file'
+  title: string
+  createdAt: Date
+  author: UserMin
+  size: number
+  torrent: {
+    size: number
+    download: () => Promise<TorrentFile>
+  }
+  downloads: number
+  downloadStatistics: {
+    seeders: number
+    speed: string
+    leechers: number
+  }
+  htmlContent: string
+}
+
+export type InfoTopic = {
+  id: number
+  type: 'info'
+  title: string
+  createdAt: Date
+  author: UserMin
+  htmlContent: string
+}
+
+export type Topic = FileTopic | InfoTopic
+
+export type TopicMin = Pick<Topic, 'id' | 'title' | 'author'> & {
+  replies: number
+  updatedAt: Date
+} & (FileTopicMin | InfoTopicMin)
+
+type FileTopicMin = {
+  type: 'file'
+  downloadStatistics: {
+    seeders: number
+    leechers: number
+  }
+  size: number
+  downloads: number
+}
+
+type InfoTopicMin = {
+  type: 'info'
+}
+```
+
+### User
+
+```ts
+export type UserAccount = {
+  type: 'user'
+  id: number
+  name: string
+}
+
+export type GuestUser = {
+  type: 'guest'
+}
+
+export type User = UserAccount | GuestUser
+
+export type UserMin = User
+```
+
+### Torrent file
+
+```ts
+export type TorrentFile = {
+  name: string
+  content: Buffer
+}
+```
 
 ## Лицензия
 

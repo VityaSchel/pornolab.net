@@ -32,13 +32,13 @@ export async function GetTopic(this: PornolabAPI, topicId: number): Promise<Topi
   if(isFileTopic) {
     const [,,downloadsCell,sizeCell] = page.querySelectorAll('#tor-reged > table:first-child .row1')
     const size = sizeCell.children[1].textContent?.trim()
-    const downloads = downloadsCell.children[1].childNodes[0].textContent?.trim()
+    const downloads = downloadsCell.children[1].childNodes[0].textContent?.trim().match(/^(\d+)\sраз$/)?.[1]
     const seed = page.querySelector('.seed')
     const seeders = seed?.querySelector(':scope > b')?.textContent?.trim()
     const downloadSpeed = seed?.childNodes[2]?.textContent?.trim()?.match(/^\[ +(.+?) +\]$/)?.[1]
     const leechers = page.querySelector('.leech > b')?.textContent?.trim()
 
-    const torrentSize = page.querySelector('p .dl-link')?.parentNode?.nextSibling?.textContent?.trim()
+    const torrentSize = page.querySelector('p .dl-link')?.parentNode?.nextSibling?.nextSibling?.textContent?.trim()
 
     topic = {
       type: 'file',
@@ -54,9 +54,9 @@ export async function GetTopic(this: PornolabAPI, topicId: number): Promise<Topi
         download: () => downloadUtility({ bbData: this.bbData }, topicId)
       },
       downloadStatistics: {
-        seeders: Number(seeders),
+        seeders: seeders === undefined ? 0 : Number(seeders),
         speed: downloadSpeed ?? '0 KB/s',
-        leechers: Number(leechers)
+        leechers: leechers === undefined ? 0 : Number(leechers)
       }
     } satisfies Topic
   } else {

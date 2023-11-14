@@ -18,7 +18,9 @@ export async function request(path: string, auth: { bbData: string }, options?: 
 
 export function sizeToBytes(size?: string) {
   if(!size) return 0
-  const [value, unit] = size.split(' ')
+  const match = size.match(/^(\d+)\s+([a-zA-Z]+)$/)
+  if(!match) return 0
+  const [, value, unit] = match
   const units = {
     'B': 1,
     'KB': 1024,
