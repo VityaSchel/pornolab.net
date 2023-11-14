@@ -4,7 +4,7 @@
 
 ## Скачивание торрент файла
 
-Для скачивания торрент-файлов вам нужна ссылка вида `https://pornolab.net/forum/dl.php?t=1624089` где параметр `t` — это ID топика (ссылка выше для топика `https://pornolab.net/forum/viewtopic.php?t=1624089`, обратите внимание, что параметр `t` такой же)
+Для скачивания торрент-файлов вам нужна ссылка вида `https://pornolab.net/forum/dl.php?t=1641717` где параметр `t` — это ID топика (ссылка выше для топика `https://pornolab.net/forum/viewtopic.php?t=1641717`, обратите внимание, что параметр `t` такой же)
 
 Чтобы ваше приложение оставалось работающим даже если этот формат изменится, вы можете получить URL ссылки "Скачать .torrent", сделав парсинг HTML разметки и получив аттрибут href с помощью 
 ```js
@@ -14,8 +14,8 @@ document.querySelector('.dl-link').getAttribute('href')
 Информация о размере торрент файла, размере скачиваемого контента, количестве скачиваний, дате регистрации, описании торрента и прочем доступна в этой же разметке, генерируется на сервере.
 
 Чтобы скачать torrent файл, сделайте запрос GET по этой ссылке с заголовком Cookie. В ответ придут заголовки:
-- `Content-Type: application/x-bittorrent; name="[pornolab.net].t1624089.torrent"`
-- `Content-Disposition: attachment; filename="[pornolab.net].t1624089.torrent"`
+- `Content-Type: application/x-bittorrent; name="[pornolab.net].t1641717.torrent"`
+- `Content-Disposition: attachment; filename="[pornolab.net].t1641717.torrent"`
 - `Content-Length: 12602`
 Из них вы можете получить имя файла и его размер в байтах.
 Тело ответа — это сам torrent файл, который передается в бинарном формате (сыром). Сохраните его и отдайте пользователю вашего приложения или запишите на диск системы или передайте сразу в зарегистрированный торрент клиент.
@@ -28,7 +28,7 @@ document.querySelector('.dl-link').getAttribute('href')
 
 Используйте заголовок Cookie для авторизации, `Content-Type: application/x-www-form-urlencoded; charset=UTF-8`, и тело запроса вида:
 ```
-t=1624089
+t=1641717
 ```
 где значение t — это ID топика, для которого вы хотите получить список файлов.
 

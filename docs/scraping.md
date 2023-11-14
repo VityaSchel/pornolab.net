@@ -38,7 +38,7 @@ token и form_token берутся из инлайн-скрипта javascript �
     ajax.exec({
       action: 'thx',
       mode: mode,
-      topic_id: '1624089',
+      topic_id: '1641717',
       t_hash: 'ЗДЕСЬ_ВАШ_ТОКЕН',
     });
   };
