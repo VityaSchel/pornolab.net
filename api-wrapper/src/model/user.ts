@@ -1,6 +1,13 @@
-export type User = {
+export type UserAccount = {
+  type: 'user'
   id: number
   name: string
 }
 
-export type UserMin = Pick<User, 'id' | 'name'>
+export type GuestUser = {
+  type: 'guest'
+}
+
+export type User = UserAccount | GuestUser
+
+export type UserMin = User//Pick<User, 'id' | 'name' | 'type'>

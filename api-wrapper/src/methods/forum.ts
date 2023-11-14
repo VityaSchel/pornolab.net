@@ -1,5 +1,5 @@
 import PornolabAPI from '@/index.js'
-import { request } from '@/utils.js'
+import { parseDate, request } from '@/utils.js'
 import { Forum, ForumMin } from '@/model/forum.js'
 import { JSDOM } from 'jsdom'
 import { getTopicMin } from '@/methods/topic.js'
@@ -38,36 +38,41 @@ export async function GetForum(this: PornolabAPI, forumId: number, options?: { o
 
 export function getSubforums(subforumsTable: Element): ForumMin[] {
   const rows = Array.from(subforumsTable.querySelectorAll('tr:not(:first-child)'))
-  const subforums = rows.map(row => {
+  const subforums: ForumMin[] = []
+  for(const row of rows) {
+    if (row.querySelector('.spaceRow')) continue
     const name = row.querySelector('h4')?.textContent?.trim()
     const id = row.querySelector('h4 > a')?.getAttribute('href')?.match(/^viewforum.php\?f=(\d+)/)?.[1]
     const topics = row.children[2].textContent?.trim()
     const messages = row.children[3].textContent?.trim()
     const lastMessageAuthor = row.children[4].querySelector(':scope > p > a')
     const lastMessage = {
-      topicId: row.children[4].querySelector(':scope > h6 > a')?.getAttribute('href')?.match(/^viewtopic.php\?t=(\d+)/)?.[1],
-      date: row.children[4].querySelector(':scope > p')?.childNodes[0].textContent?.trim(),
+      topicId: row.children[4].querySelector(':scope > h6 > a')?.getAttribute('href')?.match(/viewtopic.php\?t=(\d+)/)?.[1],
+      date: row.children[4].querySelector(':scope > p')?.childNodes[0].textContent?.trim()?.replaceAll(/\s{2,}/g, ' ')?.match(/^(.+)\sby$/)?.[1],
       author: {
         id: lastMessageAuthor?.getAttribute('href')?.match(/profile.php\?mode=viewprofile&u=(\d+)/)?.[1],
         name: lastMessageAuthor?.textContent?.trim(),
       }
     }
     
-    return {
+    subforums.push({
       name: name!,
       id: Number(id),
       topics: Number(topics),
       messages: Number(messages),
       lastMessage: {
         topicId: Number(lastMessage.topicId),
-        date: new Date(lastMessage.date!),
-        author: {
+        date: parseDate(lastMessage.date!),
+        author: lastMessage.author.id === undefined ? {
+          type: 'guest'
+        } : {
+          type: 'user',
           id: Number(lastMessage.author.id),
           name: lastMessage.author.name!,
         }
       }
-    } satisfies ForumMin
-  })
+    } satisfies ForumMin)
+  }
   return subforums
 }
 
@@ -86,6 +91,7 @@ function getTopics(topicsRows: Element[]) {
 function parseMainTable(table: Element) {
   const rows = Array.from(table.querySelectorAll(':scope > tbody > tr'))
   rows.shift()
+  rows.pop()
   const announcements: Element[] = []
   const sticky: Element[] = []
   const topics: Element[] = []
@@ -106,15 +112,17 @@ function parseMainTable(table: Element) {
       currentRows = []
       if(separator.textContent?.trim() === 'Объявления') {
         currentSection = 'announcements'
-      } else if (separator.textContent?.trim() === 'Прилеплено') {
+      } else if (separator.textContent?.trim() === 'Прилеплены') {
         currentSection = 'sticky'
       } else if (separator.textContent?.trim() === 'Топики') {
         currentSection = 'topics'
       }
     } else {
+      if(row.children.length <= 1) continue
       currentRows.push(row)
     }
   }
+  topics.push(...currentRows)
 
   return { announcements, sticky, topics }
 }

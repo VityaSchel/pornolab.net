@@ -6,10 +6,10 @@ if (!bbData) throw new Error('Fill BB_DATA in .env file')
 
 const pornolab = new PornolabAPI({ bbData })
 
-pornolab.getForum(1688, { offset: 50 })
-  .then(({ subforums/*, announcements, sticky, topics*/ }) => {
-    console.log('Форумы:', subforums/*.map(forum => forum.name).join(', ')*/)
-    // console.log('Объявления:', announcements.map(topic => topic.title).join(', '))
-    // console.log('Прилеплено:', sticky.map(topic => topic.title).join(', '))
-    // console.log('Топики:', sticky.map(topic => topic.title).join(', '))
+pornolab.getForum(1688)
+  .then(({ subforums, announcements, sticky, topics }) => {
+    console.log('Форумы:\n' + subforums.map(forum => ' - ' + forum.name).join('\n'))
+    console.log('Объявления:\n' + announcements.map(topic => ' - ' + topic.title).join('\n'))
+    console.log('Прилеплено:\n' + sticky.map(topic => ' - ' + topic.title).join('\n'))
+    console.log('Топики:\n' + topics.map(topic => ' - ' + topic.title).join('\n'))
   })

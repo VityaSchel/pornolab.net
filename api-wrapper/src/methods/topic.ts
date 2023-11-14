@@ -18,7 +18,10 @@ export async function GetTopic(this: PornolabAPI, topicId: number): Promise<Topi
   const createdAt = parseDate(page.querySelector('#topic_main > tbody:nth-child(2) .post_head a.small')?.textContent?.trim())
   const authorName = page.querySelector('#topic_main > tbody:nth-child(2) .nick-author')?.textContent?.trim()
   const authorId = page.querySelector('#topic_main > tbody:nth-child(2) .poster_btn > .post_btn_2 > a:first-child')?.getAttribute('href')?.match(/profile.php\?mode=viewprofile&u=(\d+)/)?.[1]
-  const author = {
+  const author = authorId === undefined ? {
+    type: 'guest' as const
+  } : {
+    type: 'user' as const,
     id: Number(authorId),
     name: authorName!
   }
@@ -74,10 +77,10 @@ export function getTopicMin(topicRow: Element): TopicMin {
   const [,nameCell,torrentCell,statsCell,dateCell] = topicRow.children
 
   const name = nameCell.querySelector('.torTopic > a')
-  const id = name?.getAttribute('href')?.match(/^viewtopic.php\?t=(\d+)/)?.[1]
+  const id = name?.getAttribute('href')?.match(/viewtopic.php\?t=(\d+)/)?.[1]
   const title = name?.textContent
-  const authorId = name?.querySelector('a.topicAuthor')?.getAttribute('href')?.match(/profile.php\?mode=viewprofile&u=(\d+)/)?.[1]
-  const authorName = name?.querySelector('a.topicAuthor')?.textContent?.trim()
+  const authorId = nameCell.querySelector('div.topicAuthor > a.topicAuthor')?.getAttribute('href')?.match(/profile.php\?mode=viewprofile&u=(\d+)/)?.[1]
+  const authorName = nameCell.querySelector('div.topicAuthor')?.textContent?.trim()
   const replies = Number(statsCell.querySelector(':scope > p:first-child > span')!.textContent!.trim())
   const updatedAt = new Date(dateCell.querySelector(':scope > p:first-child')!.textContent!.trim())
 
@@ -94,7 +97,10 @@ export function getTopicMin(topicRow: Element): TopicMin {
       id: Number(id),
       title: title!,
       updatedAt: updatedAt!,
-      author: {
+      author: authorId === undefined ? {
+        type: 'guest'
+      } : {
+        type: 'user',
         id: Number(authorId),
         name: authorName!
       },
@@ -112,7 +118,10 @@ export function getTopicMin(topicRow: Element): TopicMin {
       id: Number(id),
       title: title!,
       updatedAt: updatedAt!,
-      author: {
+      author: authorId === undefined ? {
+        type: 'guest'
+      } : {
+        type: 'user',
         id: Number(authorId),
         name: authorName!
       },

@@ -30,7 +30,7 @@ pornolab.getForum(1688, { offset: 50 })
     console.log('Форумы:', subforums.map(forum => forum.name).join(', '))
     console.log('Объявления:', announcements.map(topic => topic.title).join(', '))
     console.log('Прилеплено:', sticky.map(topic => topic.title).join(', '))
-    console.log('Топики:', sticky.map(topic => topic.title).join(', '))
+    console.log('Топики:', topics.map(topic => topic.title).join(', '))
   })
 ```
 

@@ -31,14 +31,24 @@ export function sizeToBytes(size?: string) {
 
 export function parseDate(dateString?: string) {
   if (!dateString) return new Date('Invalid Date')
-  const match = dateString.match(/(\d{2})-([а-яА-Я]{3})-(\d{2}) (\d{2}):(\d{2}):(\d{2})/)
+  const match = dateString.match(/(\d{2})-([а-яА-Я]{3})-(\d{2}) (\d{2}):(\d{2})(:(\d{2}))?/)
   if(!match) return new Date('Invalid Date')
-  const [, day, shortMonth, shortYear, hours, minutes, seconds] = match
+  const [, day, shortMonth, shortYear, hours, minutes,,seconds] = match
   const month = [
     'Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн',
     'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'
   ].indexOf(shortMonth)
-  return new Date(Number('20' + shortYear), month, Number(day), Number(hours), Number(minutes), Number(seconds))
+  const args = [
+    Number('20' + shortYear),
+    month,
+    Number(day),
+    Number(hours),
+    Number(minutes)
+  ] as const
+  const date = (seconds !== undefined && seconds !== '') 
+    ? new Date(...args, Number(seconds))
+    : new Date(...args)
+  return date
 }
 
 export async function downloadUtility(auth: { bbData: string }, topicId: number): Promise<TorrentFile> {
