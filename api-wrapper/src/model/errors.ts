@@ -7,8 +7,11 @@ export class UnauthorizedError extends Error {
 }
 
 export class InvalidAuthTokenError extends Error {
-  constructor() {
+  invalidToken
+
+  constructor(invalidToken: string) {
     super('Invalid auth token found in bb_data')
+    this.invalidToken = invalidToken
   }
 }
 

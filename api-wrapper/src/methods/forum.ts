@@ -1,4 +1,4 @@
-import PornolabAPI from '@/index.js'
+import { PornolabAPI } from '@/index.js'
 import { parseDate, request } from '@/utils.js'
 import { Forum, ForumMin } from '@/model/forum.js'
 import { JSDOM } from 'jsdom'

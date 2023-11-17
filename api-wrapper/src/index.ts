@@ -10,12 +10,12 @@ type ConstructorOptions = {
   proxy?: SocksProxies
 }
 
-export default class PornolabAPI {
+export class PornolabAPI {
   bbData: string | null = null
   proxy: SocksProxies | undefined
 
-  constructor(options: ConstructorOptions) {
-    this.proxy = options.proxy
+  constructor(options?: ConstructorOptions) {
+    this.proxy = options?.proxy
   }
   
   setAuthToken = SetAuthToken
@@ -29,3 +29,7 @@ export default class PornolabAPI {
 }
 
 export { downloadUtility } from './utils.js'
+
+export * from './model/errors.js'
+
+export type { CaptchaInternals } from './methods/login.js'

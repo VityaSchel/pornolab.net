@@ -1,4 +1,4 @@
-import PornolabAPI from '@/index.js'
+import { PornolabAPI } from '@/index.js'
 import { AuthExoticError, CaptchaRequiredError, CredentialsIncorrectError, InvalidAuthTokenError } from '@/model/errors.js'
 import { authTokenRegex } from '@/utils.js'
 import cookie from 'cookie'
@@ -36,14 +36,14 @@ export async function Login(this: PornolabAPI, { username, password, captcha }: 
   if(request.status === 302) {
     const cookieJar = cookie.parse(request.headers.get('set-cookie') ?? '')
     request.headers.get('set-cookie')?.match(/bb_data=(.+?);/)
-    if (!authTokenRegex.test(cookieJar.bb_data)) throw new InvalidAuthTokenError()
+    if (!authTokenRegex.test(cookieJar.bb_data)) throw new InvalidAuthTokenError(cookieJar.bb_data)
     this.bbData = cookieJar.bb_data
     return this.bbData
   } else {
     const dom = new JSDOM(response)
     const page = dom.window.document
 
-    const error = page.querySelector('h4.warnColor1')?.textContent?.trim()?.replaceAll(/\s/, ' ')?.replaceAll(/\s{2,}/, ' ')
+    const error = page.querySelector('h4.warnColor1')?.textContent?.trim()?.replaceAll(/\s/g, ' ')?.replaceAll(/\s{2,}/g, ' ')
 
     const handleCaptcha = () => {
       const captchaImage = page.querySelector('img[src~="static.pornolab.net/captcha"]')

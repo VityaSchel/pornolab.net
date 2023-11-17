@@ -30,6 +30,7 @@
     "dotenv": "^16.0.0",
     "esbuild": "^0.15.14",
     "eslint": "^8.8.0",
+    "input": "^1.0.1",
     "ts-jest": "^29.0.3",
     "typescript": "^5.1.6",
     "undici": "^5.23.0"

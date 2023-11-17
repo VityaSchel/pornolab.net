@@ -2,6 +2,24 @@
 
 Неофициальный враппер браузерного API для pornolab.net с TypeScript и покрытием тестов Jest. Парсинг HTML с jsdom.
 
+- [pornolab.net API JavaScript wrapper](#pornolabnet-api-javascript-wrapper)
+  - [Установка](#установка)
+  - [Использование](#использование)
+    - [Авторизироваться с токеном получить форум id1688](#авторизироваться-с-токеном-получить-форум-id1688)
+    - [Авторизироваться с логином и паролем и получить топик #1641717](#авторизироваться-с-логином-и-паролем-и-получить-топик-1641717)
+  - [Документация](#документация)
+    - [PornolabAPI](#pornolabapi)
+      - [Использование прокси](#использование-прокси)
+    - [setAuthToken(authToken: { bbData: string }): void](#setauthtokenauthtoken--bbdata-string--void)
+    - [login(credentials: { username: string, password: string, captcha?: { solution: string, internals: CaptchaInternals } }): Promise\<string\>](#logincredentials--username-string-password-string-captcha--solution-string-internals-captchainternals---promisestring)
+    - [getForum(forumId: number): Promise\<Forum\>](#getforumforumid-number-promiseforum)
+    - [getTopic(topicId: number): Promise\<Topic\>](#gettopictopicid-number-promisetopic)
+    - [Forum](#forum)
+    - [Topic](#topic)
+    - [User](#user)
+    - [Torrent file](#torrent-file)
+  - [Лицензия](#лицензия)
+
 Полная документация по реверс-инженерингу форума доступна на [GitHub](https://github.com/VityaSchel/pornolab.net)
 
 ## Установка
@@ -18,6 +36,8 @@ pnpm i gayporn
 ```
 
 ## Использование
+
+Больше примеров: [examples](./examples)
 
 ### Авторизироваться с токеном получить форум id1688
 ```typescript
@@ -38,20 +58,20 @@ pornolab.getForum(1688, { offset: 50 })
 
 ### Авторизироваться с логином и паролем и получить топик #1641717
 ```typescript
-import PornolabAPI from 'gayporn'
+import { PornolabAPI, CaptchaRequiredError, CredentialsIncorrectError, CaptchaInternals } from 'gayporn'
 import input from 'input'
 
 const pornolab = new PornolabAPI()
 
-const login = async (username: string, password: string, captcha?: { solution: string, internals: object }) => {
+const login = async (username: string, password: string, captcha?: { solution: string, internals: CaptchaInternals }) => {
   try {
     await pornolab.login({ username, password, captcha })
-  } catch(e) {
-    if (e instanceof PornolabAPI.CaptchaRequiredError) {
+  } catch (e) {
+    if (e instanceof CaptchaRequiredError) {
       console.error('Введите капчу: ' + e.captcha.url)
       const solution = await input.text('Решение: ')
       await login(username, password, { solution, internals: e.captcha.internals })
-    } else if(e instanceof PornolabAPI.CredentialsIncorrectError) {
+    } else if (e instanceof CredentialsIncorrectError) {
       console.error('Вы указали неправильные данные для входа')
       throw e
     } else {
@@ -59,6 +79,8 @@ const login = async (username: string, password: string, captcha?: { solution: s
     }
   }
 }
+
+await login(process.env.USERNAME, process.env.PASSWORD)
 
 pornolab.getTopic(1641717)
   .then((topic) => {
@@ -100,8 +122,8 @@ const api = new PornolabAPI(constructor: ConstructorOptions)
 ```ts
 const api = new PornolabAPI({
   proxy: {
-    host: 'localhost',
-    port: 9050,
+    host: '127.0.0.1',
+    port: 9150,
     type: 5
   }
 })
@@ -109,13 +131,19 @@ const api = new PornolabAPI({
 
 ### setAuthToken(authToken: { bbData: string }): void
 
-### login
+### login(credentials: { username: string, password: string, captcha?: { solution: string, internals: CaptchaInternals } }): Promise&lt;string&gt;
 
-### getForum(forumId: number): Promise<Forum>
+Авторизоваться с помощью логина и пароля.
+
+Возможные ошибки: PornolabAPI.CaptchaRequiredError, PornolabAPI.CredentialsIncorrectError, PornolabAPI.AuthExoticError, PornolabAPI.InvalidAuthTokenError
+
+Как обрабатывать капчу вы можете увидеть в примерах выше.
+
+### getForum(forumId: number): Promise&lt;Forum&gt;
 
 Получить информацию о форуме
 
-### getTopic(topicId: number): Promise<Topic>
+### getTopic(topicId: number): Promise&lt;Topic&gt;
 
 Получить информацию о топике
 

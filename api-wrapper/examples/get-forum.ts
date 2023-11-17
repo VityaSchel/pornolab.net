@@ -1,10 +1,12 @@
 import '../env.js'
-import PornolabAPI from '../out/index.js'
+import { PornolabAPI } from '../out/index.js'
 
 const bbData = process.env.BB_DATA
 if (!bbData) throw new Error('Fill BB_DATA in .env file')
 
-const pornolab = new PornolabAPI({ bbData })
+const pornolab = new PornolabAPI()
+
+pornolab.setAuthToken({ bbData })
 
 pornolab.getForum(1688)
   .then(({ subforums, announcements, sticky, topics }) => {

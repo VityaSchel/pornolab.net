@@ -1,4 +1,4 @@
-import PornolabAPI from '@/index.js'
+import { PornolabAPI } from '@/index.js'
 import { UnauthorizedError } from '@/model/errors.js'
 import { Topic, TopicMin } from '@/model/topic.js'
 import { downloadUtility, parseDate, sizeToBytes } from '@/utils.js'
@@ -35,7 +35,7 @@ export async function GetTopic(this: PornolabAPI, topicId: number): Promise<Topi
   if(isFileTopic) {
     const [,,downloadsCell,sizeCell] = page.querySelectorAll('#tor-reged > table:first-child .row1')
     const size = sizeCell.children[1].textContent?.trim()
-    const downloads = downloadsCell.children[1].childNodes[0].textContent?.trim().match(/^(\d+)\sраз$/)?.[1]
+    const downloads = downloadsCell.children[1].childNodes[0].textContent?.trim().match(/^(\d+)\sраза?$/)?.[1]
     const seed = page.querySelector('.seed')
     const seeders = seed?.querySelector(':scope > b')?.textContent?.trim()
     const downloadSpeed = seed?.childNodes[2]?.textContent?.trim()?.match(/^\[ +(.+?) +\]$/)?.[1]
