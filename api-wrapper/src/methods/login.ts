@@ -46,7 +46,7 @@ export async function Login(this: PornolabAPI, { username, password, captcha }: 
     const error = page.querySelector('h4.warnColor1')?.textContent?.trim()?.replaceAll(/\s/g, ' ')?.replaceAll(/\s{2,}/g, ' ')
 
     const handleCaptcha = () => {
-      const captchaImage = page.querySelector('img[src~="static.pornolab.net/captcha"]')
+      const captchaImage = page.querySelector('img[src*="static.pornolab.net/captcha"]')
       if (!captchaImage) throw new Error('Captcha required for login, but image was not found after parsing login page HTML')
       
       const captchaSid = page.querySelector('input[name=cap_sid]')
@@ -56,7 +56,7 @@ export async function Login(this: PornolabAPI, { username, password, captcha }: 
       if (!captchaCode) throw new Error('Captcha required for login, but cap_code was not found after parsing login page HTML')
 
       throw new CaptchaRequiredError({
-        url: captchaImage.getAttribute('url') ?? '',
+        url: captchaImage.getAttribute('src') ?? '',
         internals: {
           cap_code_suffix: captchaCode.getAttribute('name')?.substring('cap_code_'.length) ?? '',
           cap_sid: captchaSid.getAttribute('value') ?? ''
