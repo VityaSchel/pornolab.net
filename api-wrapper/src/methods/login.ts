@@ -66,9 +66,9 @@ export async function Login(this: PornolabAPI, { username, password, captcha }: 
 
     switch (error) {
       case 'Вы ввели неверное/неактивное имя пользователя или неверный пароль':
-        return handleCaptcha()
-      case 'Вы должны правильно ввести код подтверждения':
         throw new CredentialsIncorrectError()
+      case 'Вы должны правильно ввести код подтверждения':
+        return handleCaptcha()
       default:
         throw new AuthExoticError(error ?? '')
     }
