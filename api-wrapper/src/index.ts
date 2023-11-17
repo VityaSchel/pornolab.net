@@ -1,24 +1,31 @@
+import type { SocksProxies } from 'fetch-socks'
+import { request } from './utils.js'
+
+import { SetAuthToken } from './methods/set-auth-token.js'
+import { Login } from './methods/login.js'
 import { GetForum } from './methods/forum.js'
 import { GetTopic } from './methods/topic.js'
 
-type SessionAuth = {
-  bbData: string
+type ConstructorOptions = {
+  proxy?: SocksProxies
 }
-type AuthOptions = SessionAuth
 
 export default class PornolabAPI {
-  bbData: string
+  bbData: string | null = null
+  proxy: SocksProxies | undefined
 
-  constructor(options: AuthOptions) {
-    if ('bbData' in options) {
-      this.bbData = options.bbData
-    } else {
-      throw new Error('No auth options provided in PornolabAPI constructor')
-    }
+  constructor(options: ConstructorOptions) {
+    this.proxy = options.proxy
   }
   
+  setAuthToken = SetAuthToken
+  login = Login
   getForum = GetForum
   getTopic = GetTopic
+
+  request(...args: Parameters<typeof request>) {
+    return request.bind(this)(...args)
+  }
 }
 
 export { downloadUtility } from './utils.js'

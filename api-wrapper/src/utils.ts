@@ -1,18 +1,21 @@
 import { TorrentFile } from '@/model/torrent-file.js'
 import * as windows1251 from 'windows-1251'
+import { socksDispatcher } from 'fetch-socks'
+import PornolabAPI from '@/index.js'
 
-export async function request(path: string, auth: { bbData: string }, options?: { method?: string, body?: any, headers: Record<string, string> }) {
-  const response = await fetch(`https://pornolab.net${path}`, {
+export async function request(this: PornolabAPI, path: string, options?: { method?: string, body?: any, headers: Record<string, string> }) {
+  const request = await fetch(`https://pornolab.net${path}`, {
     method: options?.method ?? 'GET',
     ...(options?.body && { body: options.body }),
     headers: {
-      Cookie: `bb_data=${auth.bbData}; testCookie=1; cookie_notice=1`,
+      ...(this.bbData && { Cookie: `bb_data=${this.bbData}; testCookie=1; cookie_notice=1` }),
       ...options?.headers
-    }
+    },
+    ...(this.proxy && { dispatcher: socksDispatcher(this.proxy) })
   })
-    .then(res => res.arrayBuffer())
+  const response = await request.arrayBuffer()
   const text = windows1251.decode(new Uint8Array(response))
-  return text
+  return { response: text, request: request }
 }
 
 export function sizeToBytes(size?: string) {
@@ -64,3 +67,5 @@ export async function downloadUtility(auth: { bbData: string }, topicId: number)
     content
   }
 }
+
+export const authTokenRegex = /^1-\d+-[a-zA-Z0-9]-\d+-\d+-\d+-\d+-1$/

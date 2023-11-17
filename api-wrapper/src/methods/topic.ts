@@ -1,12 +1,15 @@
 import PornolabAPI from '@/index.js'
+import { UnauthorizedError } from '@/model/errors.js'
 import { Topic, TopicMin } from '@/model/topic.js'
-import { downloadUtility, parseDate, request, sizeToBytes } from '@/utils.js'
+import { downloadUtility, parseDate, sizeToBytes } from '@/utils.js'
 import { JSDOM } from 'jsdom'
 
 export async function GetTopic(this: PornolabAPI, topicId: number): Promise<Topic> {
-  const response = await request('/forum/viewtopic.php?' + new URLSearchParams({
+  if (!this.bbData) throw new UnauthorizedError('getTopic')
+
+  const { response } = await this.request('/forum/viewtopic.php?' + new URLSearchParams({
     t: String(topicId),
-  }), { bbData: this.bbData })
+  }))
 
   const dom = new JSDOM(response)
   const page = dom.window.document
@@ -51,7 +54,10 @@ export async function GetTopic(this: PornolabAPI, topicId: number): Promise<Topi
       downloads: Number(downloads),
       torrent: {
         size: sizeToBytes(torrentSize),
-        download: () => downloadUtility({ bbData: this.bbData }, topicId)
+        download: () => {
+          if (!this.bbData) throw new UnauthorizedError('torrent.download')
+          return downloadUtility({ bbData: this.bbData }, topicId)
+        }
       },
       downloadStatistics: {
         seeders: seeders === undefined ? 0 : Number(seeders),

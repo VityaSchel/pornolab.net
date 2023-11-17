@@ -19,11 +19,13 @@ pnpm i gayporn
 
 ## Использование
 
-### Получить форум id1688
+### Авторизироваться с токеном получить форум id1688
 ```typescript
-import PornolabAPI from 'gayporn'
+import { PornolabAPI } from 'gayporn'
 
-const pornolab = new PornolabAPI({ bbData: `1-00000000-aAaAaAaAaAaAaAaAaAaA-0000000000-0000000000-0000000000-0000000000-1` })
+const pornolab = new PornolabAPI()
+
+pornolab.setAuthToken({ bbData: `1-00000000-aAaAaAaAaAaAaAaAaAaA-0000000000-0000000000-0000000000-0000000000-1` })
 
 pornolab.getForum(1688, { offset: 50 })
   .then(({ subforums, announcements, sticky, topics }) => {
@@ -34,11 +36,29 @@ pornolab.getForum(1688, { offset: 50 })
   })
 ```
 
-### Получить топик #1641717
+### Авторизироваться с логином и паролем и получить топик #1641717
 ```typescript
 import PornolabAPI from 'gayporn'
+import input from 'input'
 
-const pornolab = new PornolabAPI({ bbData: `1-00000000-aAaAaAaAaAaAaAaAaAaA-0000000000-0000000000-0000000000-0000000000-1` })
+const pornolab = new PornolabAPI()
+
+const login = async (username: string, password: string, captcha?: { solution: string, internals: object }) => {
+  try {
+    await pornolab.login({ username, password, captcha })
+  } catch(e) {
+    if (e instanceof PornolabAPI.CaptchaRequiredError) {
+      console.error('Введите капчу: ' + e.captcha.url)
+      const solution = await input.text('Решение: ')
+      await login(username, password, { solution, internals: e.captcha.internals })
+    } else if(e instanceof PornolabAPI.CredentialsIncorrectError) {
+      console.error('Вы указали неправильные данные для входа')
+      throw e
+    } else {
+      throw e
+    }
+  }
+}
 
 pornolab.getTopic(1641717)
   .then((topic) => {
@@ -61,6 +81,35 @@ pornolab.getTopic(1641717)
 ```
 
 ## Документация
+
+### PornolabAPI
+
+Инициализировать библиотеку для работы с API. Опционально также можно передать опции для SOCKS прокси, например тор
+
+```ts
+type ConstructorOptions = { proxy?: string }
+const api = new PornolabAPI(constructor: ConstructorOptions)
+```
+
+#### Использование прокси
+
+Эта библиотека поддерживает проксирование запросов через SOCKS5 прокси, которые поддерживает, например, Tor browser. Работает на [https://github.com/Kaciras/fetch-socks](https://github.com/Kaciras/fetch-socks).
+
+Пример:
+
+```ts
+const api = new PornolabAPI({
+  proxy: {
+    host: 'localhost',
+    port: 9050,
+    type: 5
+  }
+})
+```
+
+### setAuthToken(authToken: { bbData: string }): void
+
+### login
 
 ### getForum(forumId: number): Promise<Forum>
 

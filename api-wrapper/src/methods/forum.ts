@@ -3,12 +3,15 @@ import { parseDate, request } from '@/utils.js'
 import { Forum, ForumMin } from '@/model/forum.js'
 import { JSDOM } from 'jsdom'
 import { getTopicMin } from '@/methods/topic.js'
+import { UnauthorizedError } from '@/model/errors.js'
 
 export async function GetForum(this: PornolabAPI, forumId: number, options?: { offset?: number }): Promise<Forum> {
-  const response = await request('/forum/viewforum.php?' + new URLSearchParams({
+  if (!this.bbData) throw new UnauthorizedError('getForum')
+
+  const { response } = await this.request('/forum/viewforum.php?' + new URLSearchParams({
     f: String(forumId),
     ...(options?.offset && { start: String(options.offset) })
-  }), { bbData: this.bbData })
+  }))
 
   const dom = new JSDOM(response)
   const page = dom.window.document
