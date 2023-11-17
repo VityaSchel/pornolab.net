@@ -12,5 +12,9 @@
       ]
     }
   },
+  "module": {
+    "type": "es6",
+    "resolveFully": true
+  },
   "minify": true
 }
