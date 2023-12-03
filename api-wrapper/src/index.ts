@@ -1,7 +1,7 @@
 import type { SocksProxies } from 'fetch-socks'
 import { request } from './utils.js'
 
-import { SetAuthToken } from './methods/set-auth-token.js'
+import { SetAuthToken, IsLoggedIn } from './methods/auth.js'
 import { Login } from './methods/login.js'
 import { GetForum } from './methods/forum.js'
 import { GetTopic } from './methods/topic.js'
@@ -20,6 +20,7 @@ export class PornolabAPI {
   
   setAuthToken = SetAuthToken
   login = Login
+  isLoggedIn = IsLoggedIn
   getForum = GetForum
   getTopic = GetTopic
 

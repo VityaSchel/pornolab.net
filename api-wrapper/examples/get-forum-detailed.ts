@@ -7,6 +7,9 @@ if (!bbData) throw new Error('Fill BB_DATA in .env file')
 const pornolab = new PornolabAPI()
 
 pornolab.setAuthToken({ bbData })
+if (!await pornolab.isLoggedIn()) {
+  throw new Error('Invalid BB_DATA')
+}
 
 pornolab.getForum(1688, { offset: 0 })
   .then(({ subforums, announcements, sticky, topics }) => {

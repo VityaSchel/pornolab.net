@@ -12,6 +12,7 @@
       - [Использование прокси](#использование-прокси)
     - [setAuthToken(authToken: { bbData: string }): void](#setauthtokenauthtoken--bbdata-string--void)
     - [login(credentials: { username: string, password: string, captcha?: { solution: string, internals: CaptchaInternals } }): Promise\<string\>](#logincredentials--username-string-password-string-captcha--solution-string-internals-captchainternals---promisestring)
+    - [isLoggedIn(): Promise\<boolean\>](#isloggedin-promiseboolean)
     - [getForum(forumId: number): Promise\<Forum\>](#getforumforumid-number-promiseforum)
     - [getTopic(topicId: number): Promise\<Topic\>](#gettopictopicid-number-promisetopic)
     - [Forum](#forum)
@@ -131,6 +132,11 @@ const api = new PornolabAPI({
 
 ### setAuthToken(authToken: { bbData: string }): void
 
+Установить токен сессии напрямую. Не вызывает запросов к серверу, для проверки валидности рекомендуется вызвать метод `isLoggedIn`.
+
+> [!IMPORTANT]  
+> Не рекомендуется вызывать методы, не убедившись в валидности передаваемого токена, так как они могут возвращать непредсказуемые результаты.
+
 ### login(credentials: { username: string, password: string, captcha?: { solution: string, internals: CaptchaInternals } }): Promise&lt;string&gt;
 
 Авторизоваться с помощью логина и пароля.
@@ -138,6 +144,12 @@ const api = new PornolabAPI({
 Возможные ошибки: PornolabAPI.CaptchaRequiredError, PornolabAPI.CredentialsIncorrectError, PornolabAPI.AuthExoticError, PornolabAPI.InvalidAuthTokenError
 
 Как обрабатывать капчу вы можете увидеть в примерах выше.
+
+### isLoggedIn(): Promise&lt;boolean&gt;
+
+Проверить, авторизован ли пользователь. Если не вызывался метод `login` или `setAuthToken` (в экземпляре класса не установлен login), то всегда возвращает `false`.
+
+Делает запрос к странице авторизации и если получает редирект, то возвращает true (токен валидный).
 
 ### getForum(forumId: number): Promise&lt;Forum&gt;
 
