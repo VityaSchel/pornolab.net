@@ -15,6 +15,6 @@ pornolab.getForum(1688)
   .then(({ subforums, announcements, sticky, topics }) => {
     console.log('Форумы:\n' + subforums.map(forum => ' - ' + forum.name).join('\n'))
     console.log('Объявления:\n' + announcements.map(topic => ' - ' + topic.title).join('\n'))
-    console.log('Прилеплено:\n' + sticky.map(topic => ' - ' + topic.title).join('\n'))
+    sticky.length && console.log('Прилеплено:\n' + sticky.map(topic => ' - ' + topic.title).join('\n'))
     console.log('Топики:\n' + topics.map(topic => ' - ' + topic.title).join('\n'))
   })

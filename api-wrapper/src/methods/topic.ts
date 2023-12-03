@@ -82,7 +82,7 @@ export async function GetTopic(this: PornolabAPI, topicId: number): Promise<Topi
 export function getTopicMin(topicRow: Element): TopicMin {
   const [,nameCell,torrentCell,statsCell,dateCell] = topicRow.children
 
-  const name = nameCell.querySelector('.torTopic > a')
+  const name = nameCell.querySelector('.torTopic > a.tt-text')
   const id = name?.getAttribute('href')?.match(/viewtopic.php\?t=(\d+)/)?.[1]
   const title = name?.textContent
   const authorId = nameCell.querySelector('div.topicAuthor > a.topicAuthor')?.getAttribute('href')?.match(/profile.php\?mode=viewprofile&u=(\d+)/)?.[1]
