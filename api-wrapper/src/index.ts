@@ -1,10 +1,10 @@
 import type { SocksProxies } from 'fetch-socks'
-import { request } from './utils.js'
+import { downloadUtility, request } from './utils.js'
 
 import { SetAuthToken, IsLoggedIn } from './methods/auth.js'
 import { Login } from './methods/login.js'
 import { GetForum } from './methods/forum.js'
-import { GetTopic } from './methods/topic.js'
+import { GetTopic, DownloadTopicFile } from './methods/topic.js'
 
 type ConstructorOptions = {
   proxy?: SocksProxies
@@ -23,6 +23,7 @@ export class PornolabAPI {
   isLoggedIn = IsLoggedIn
   getForum = GetForum
   getTopic = GetTopic
+  downloadTopicFile = DownloadTopicFile
 
   request(...args: Parameters<typeof request>) {
     return request.bind(this)(...args)

@@ -15,6 +15,7 @@
     - [isLoggedIn(): Promise\<boolean\>](#isloggedin-promiseboolean)
     - [getForum(forumId: number): Promise\<Forum\>](#getforumforumid-number-promiseforum)
     - [getTopic(topicId: number): Promise\<Topic\>](#gettopictopicid-number-promisetopic)
+    - [downloadTopicFile(topicId: number): Promise\<TorrentFile\>](#downloadtopicfiletopicid-number-promisetorrentfile)
     - [Forum](#forum)
     - [Topic](#topic)
     - [User](#user)
@@ -158,6 +159,10 @@ const api = new PornolabAPI({
 ### getTopic(topicId: number): Promise&lt;Topic&gt;
 
 Получить информацию о топике
+
+### downloadTopicFile(topicId: number): Promise&lt;TorrentFile&gt;
+
+Скачать торрент-файл, привязанный к топику напрямую.
 
 ### Forum
 

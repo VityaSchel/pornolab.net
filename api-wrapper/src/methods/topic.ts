@@ -139,3 +139,8 @@ export function getTopicMin(topicRow: Element): TopicMin {
 
   return topicMin
 }
+
+export function DownloadTopicFile(this: PornolabAPI, topicID: number) {
+  if (!this.bbData) throw new UnauthorizedError('downloadTopicFile')
+  return downloadUtility({ bbData: this.bbData }, topicID)
+}
